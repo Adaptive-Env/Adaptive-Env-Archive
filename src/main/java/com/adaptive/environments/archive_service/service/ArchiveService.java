@@ -9,9 +9,6 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.time.LocalDate;
-import java.util.UUID;
-
 @Service
 public class ArchiveService {
 
@@ -31,7 +28,14 @@ public class ArchiveService {
 
     public void store(ValidatedData data) {
         try {
-            String key = LocalDate.now() + "/" + UUID.randomUUID() + ".json";
+            String deviceId = data.getDeviceData().getDeviceId();
+            String location = data.getDeviceData().getLocation();
+            String type = data.getDeviceData().getType();
+            Long timestamp = data.getDeviceData().getTimestamp();
+
+            //SCHEME: pump-01/outlet/pressure_out/1712839200000.json
+            String key = String.format("%s/%s/%s/%d.json", deviceId, location, type, timestamp);
+
             String json = objectMapper.writeValueAsString(data);
 
             PutObjectRequest request = PutObjectRequest.builder()

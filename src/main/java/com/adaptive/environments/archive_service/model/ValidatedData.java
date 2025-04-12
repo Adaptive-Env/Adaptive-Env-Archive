@@ -10,6 +10,4 @@ import lombok.*;
 public class ValidatedData {
     private DeviceData deviceData;
     private String hash;
-
-
 }
