@@ -7,6 +7,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3Configuration;
 
 import java.net.URI;
 
@@ -22,14 +23,23 @@ public class S3ClientConfig {
     @Value("${minio.secret-key}")
     private String secretKey;
 
+    @Value("${minio.region}")
+    private String region;
+
     @Bean
     public S3Client s3Client() {
+        System.out.println("Connecting to MinIO at: " + endpoint);
         return S3Client.builder()
                 .endpointOverride(URI.create(endpoint))
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(accessKey, secretKey)
                 ))
-                .region(Region.EU_CENTRAL_1)
+                .serviceConfiguration(
+                        S3Configuration.builder()
+                                .pathStyleAccessEnabled(true)
+                                .build()
+                )
+                .region(Region.of(region))
                 .build();
     }
 }
